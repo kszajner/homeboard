@@ -1,0 +1,19 @@
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dashboard-dev
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8089 --reload
+    ports:
+      - "8089:8089"
+    environment:
+      APP_ENV: development
+      LOG_LEVEL: DEBUG
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+      - ./data:/app/data
+    restart: unless-stopped

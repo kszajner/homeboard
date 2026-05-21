@@ -1,0 +1,308 @@
+/* Monthly calendar grid. */
+
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+}
+
+.calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.calendar__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.calendar__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.calendar__nav-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  transition: background-color 200ms ease;
+}
+
+.calendar__nav-btn:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.calendar__today-btn {
+  padding: 0 var(--space-3);
+  height: 36px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-accent);
+  color: var(--color-accent-on);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.calendar__today-btn:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.calendar__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-1);
+  padding: 0 var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calendar__weekday {
+  text-align: left;
+  padding: 0 var(--space-2);
+}
+
+.calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(96px, 1fr);
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.calendar__day {
+  position: relative;
+  background-color: var(--color-surface);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  cursor: pointer;
+  min-height: 96px;
+  overflow: hidden;
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.calendar__day:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border);
+}
+
+.calendar__day--other-month {
+  background-color: transparent;
+}
+
+.calendar__day--other-month .calendar__day-number {
+  color: var(--color-text-subtle);
+}
+
+.calendar__day-number {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+.calendar__day--today .calendar__day-number {
+  background-color: var(--color-accent);
+  color: var(--color-accent-on);
+}
+
+.calendar__events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.calendar__pill {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.calendar__more {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  padding: 0 6px;
+}
+
+/* --- Modal --- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(17, 24, 39, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: var(--space-4);
+}
+
+.modal {
+  background-color: var(--color-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  max-width: 520px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: var(--space-5);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.modal__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.modal__close {
+  font-size: var(--font-size-xl);
+  line-height: 1;
+  padding: 0 var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.event-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.event-item:last-child {
+  border-bottom: none;
+}
+
+.event-item__time {
+  flex: 0 0 70px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.event-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.event-item__title {
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 2px;
+}
+
+.event-item__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* --- Weather widget --- */
+.weather {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.weather__main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.weather__temp {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.weather__icon svg {
+  width: 48px;
+  height: 48px;
+  color: var(--color-accent);
+}
+
+.weather__city {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+}
+
+.weather__desc {
+  font-size: var(--font-size-sm);
+}
+
+/* --- Today / Tomorrow --- */
+.today-tomorrow h3 {
+  font-size: var(--font-size-lg);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.today-tomorrow__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.today-tomorrow__list li {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.today-tomorrow__list li:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.today-tomorrow__time {
+  flex: 0 0 60px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.today-tomorrow__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

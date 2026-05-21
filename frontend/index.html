@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e3a8a" />
+  <title>Dashboard</title>
+
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
+  <link rel="stylesheet" href="/css/components/calendar.css" />
+  <link rel="stylesheet" href="/css/components/bills.css" />
+  <link rel="stylesheet" href="/css/components/kanban.css" />
+  <link rel="stylesheet" href="/css/components/menu.css" />
+</head>
+<body>
+  <div id="offline-banner" class="offline-banner" hidden>
+    <span class="offline-banner__text"></span>
+    <button type="button" class="offline-banner__close" aria-label="Zamknij">×</button>
+  </div>
+
+  <div class="app">
+    <aside class="sidebar" aria-label="Nawigacja główna">
+      <nav class="sidebar__nav">
+        <a class="sidebar__item" href="#/" data-route="/">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 11.5 12 4l9 7.5" />
+              <path d="M5 10v10h14V10" />
+            </svg>
+          </span>
+          <span class="sidebar__label">Start</span>
+        </a>
+        <a class="sidebar__item" href="#/kanban" data-route="/kanban">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="5" height="16" rx="1" />
+              <rect x="10" y="4" width="5" height="10" rx="1" />
+              <rect x="17" y="4" width="4" height="13" rx="1" />
+            </svg>
+          </span>
+          <span class="sidebar__label">Zadania</span>
+        </a>
+        <a class="sidebar__item" href="#/menu" data-route="/menu">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4v16" />
+              <path d="M4 4c2 0 2 6 0 6" />
+              <path d="M20 4v16" />
+              <path d="M20 4c-2 0-2 8 0 8" />
+            </svg>
+          </span>
+          <span class="sidebar__label">Menu</span>
+        </a>
+        <a class="sidebar__item" href="#/settings" data-route="/settings">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9c.2.5.6.9 1.1 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+            </svg>
+          </span>
+          <span class="sidebar__label">Ustawienia</span>
+        </a>
+      </nav>
+
+      <!-- TODO: external services links (HabitTrove / Paperless / Actual) -->
+      <div class="sidebar__external" hidden></div>
+    </aside>
+
+    <main id="main" class="main" aria-live="polite"></main>
+  </div>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

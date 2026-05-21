@@ -1,0 +1,108 @@
+.kanban__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.kanban__board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.kanban__column {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.kanban__column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.kanban__column-title {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+}
+
+.kanban__count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  background-color: var(--color-bg);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.kanban__cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 20px;
+}
+
+.kanban-card {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  cursor: grab;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 200ms ease, transform 100ms ease;
+}
+
+.kanban-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.kanban-card.sortable-ghost {
+  opacity: 0.4;
+}
+
+.kanban-card.sortable-chosen {
+  cursor: grabbing;
+}
+
+.kanban-card__title {
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-1);
+}
+
+.kanban-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kanban-card__due {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+.kanban-card__due--warning {
+  background-color: #fef3c7;
+  color: var(--color-warning);
+}
+
+.kanban-card__due--danger {
+  background-color: #fee2e2;
+  color: var(--color-danger);
+}

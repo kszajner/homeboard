@@ -1,0 +1,23 @@
+# Default: let git decide based on content.
+*           text=auto
+
+# Shell scripts must keep LF — they run on Linux (RPI).
+*.sh        text eol=lf
+
+# Dockerfile, compose, makefiles also expect LF.
+Dockerfile  text eol=lf
+Makefile    text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+
+# Source files
+*.py        text eol=lf
+*.js        text eol=lf
+*.css       text eol=lf
+*.html      text eol=lf
+
+# Binary
+*.woff2     binary
+*.png       binary
+*.jpg       binary
+*.ico       binary
