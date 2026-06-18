@@ -1,4 +1,4 @@
-// Kanban view — 3 fixed columns with SortableJS drag-and-drop.
+// Kanban view — 3 fixed columns with SortableJS drag-and-drop and subtasks.
 
 import { api } from '../api.js';
 import { openModal } from './../components/modal.js';
@@ -56,7 +56,123 @@ async function ensureSortable() {
   return window.Sortable;
 }
 
-function cardForm({ initial = {}, onSubmit, onDelete }) {
+// --- Subtasks UI inside the card edit modal -------------------------------
+
+function buildSubtaskRow(subtask, { onToggle, onRename, onDelete }) {
+  const row = document.createElement('li');
+  row.className = 'subtask' + (subtask.done ? ' subtask--done' : '');
+  row.dataset.id = String(subtask.id);
+  row.innerHTML = `
+    <input type="checkbox" class="subtask__check" ${subtask.done ? 'checked' : ''} aria-label="Oznacz jako zrobione" />
+    <input type="text" class="subtask__input" />
+    <button type="button" class="subtask__delete" aria-label="Usuń">×</button>
+  `;
+  const check = row.querySelector('.subtask__check');
+  const input = row.querySelector('.subtask__input');
+  const del = row.querySelector('.subtask__delete');
+
+  input.value = subtask.title;
+
+  check.addEventListener('change', () => onToggle(check.checked));
+  input.addEventListener('blur', () => {
+    const v = input.value.trim();
+    if (v && v !== subtask.title) onRename(v);
+    else if (!v) input.value = subtask.title;
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+  });
+  del.addEventListener('click', onDelete);
+
+  return row;
+}
+
+function buildSubtasksSection(card, { onChange }) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'subtasks';
+  wrapper.innerHTML = `
+    <label class="form-field" style="margin: 0;">
+      <span class="muted" style="font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); display:block; margin-bottom: var(--space-2);">Podzadania</span>
+    </label>
+    <ul class="subtasks__list"></ul>
+    <div class="subtasks__add">
+      <input type="text" placeholder="Dodaj podzadanie..." />
+      <button type="button" class="subtasks__add-btn">Dodaj</button>
+    </div>
+  `;
+
+  const list = wrapper.querySelector('.subtasks__list');
+  const newInput = wrapper.querySelector('.subtasks__add input');
+  const addBtn = wrapper.querySelector('.subtasks__add-btn');
+
+  let subtasks = [...(card.subtasks || [])];
+
+  function repaint() {
+    list.innerHTML = '';
+    for (const st of subtasks) {
+      list.appendChild(
+        buildSubtaskRow(st, {
+          onToggle: async (done) => {
+            try {
+              const updated = await api.put(`/api/kanban/subtasks/${st.id}`, { done });
+              Object.assign(st, updated);
+              repaint();
+              onChange?.(subtasks);
+            } catch (err) {
+              alert(`Błąd: ${err.message}`);
+            }
+          },
+          onRename: async (title) => {
+            try {
+              const updated = await api.put(`/api/kanban/subtasks/${st.id}`, { title });
+              Object.assign(st, updated);
+              onChange?.(subtasks);
+            } catch (err) {
+              alert(`Błąd: ${err.message}`);
+            }
+          },
+          onDelete: async () => {
+            try {
+              await api.delete(`/api/kanban/subtasks/${st.id}`);
+              subtasks = subtasks.filter((s) => s.id !== st.id);
+              repaint();
+              onChange?.(subtasks);
+            } catch (err) {
+              alert(`Błąd: ${err.message}`);
+            }
+          },
+        })
+      );
+    }
+  }
+
+  async function addNew() {
+    const title = newInput.value.trim();
+    if (!title) return;
+    try {
+      const created = await api.post(`/api/kanban/cards/${card.id}/subtasks`, { title });
+      subtasks.push(created);
+      newInput.value = '';
+      repaint();
+      onChange?.(subtasks);
+      newInput.focus();
+    } catch (err) {
+      alert(`Błąd: ${err.message}`);
+    }
+  }
+
+  addBtn.addEventListener('click', addNew);
+  newInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); addNew(); }
+  });
+
+  repaint();
+  return wrapper;
+}
+
+// --- Card form ------------------------------------------------------------
+
+function cardForm({ initial = {}, onSubmit, onDelete, extraSection }) {
   const form = document.createElement('form');
   form.innerHTML = `
     <div class="form-field">
@@ -65,7 +181,7 @@ function cardForm({ initial = {}, onSubmit, onDelete }) {
     </div>
     <div class="form-field">
       <label for="card-desc">Opis</label>
-      <textarea id="card-desc" rows="4"></textarea>
+      <textarea id="card-desc" rows="3"></textarea>
     </div>
     <div class="form-field">
       <label for="card-due">Termin</label>
@@ -77,6 +193,10 @@ function cardForm({ initial = {}, onSubmit, onDelete }) {
   form.querySelector('#card-title').value = initial.title || '';
   form.querySelector('#card-desc').value = initial.description || '';
   form.querySelector('#card-due').value = initial.due_date || '';
+
+  if (extraSection) {
+    form.insertBefore(extraSection, form.querySelector('.form-actions'));
+  }
 
   const actions = form.querySelector('.form-actions');
   if (onDelete) {
@@ -110,6 +230,8 @@ function cardForm({ initial = {}, onSubmit, onDelete }) {
 
   return { form, cancelBtn };
 }
+
+// --- Main view ------------------------------------------------------------
 
 export async function renderKanban(mount) {
   mount.innerHTML = `
@@ -180,16 +302,20 @@ export async function renderKanban(mount) {
     el.innerHTML = `
       <div class="kanban-card__title"></div>
       <div class="kanban-card__desc"></div>
-      <div class="kanban-card__due-wrapper"></div>
+      <div class="kanban-card__meta"></div>
+      <div class="kanban-card__progress" hidden><div class="kanban-card__progress-fill"></div></div>
     `;
     el.querySelector('.kanban-card__title').textContent = card.title;
+
     const descEl = el.querySelector('.kanban-card__desc');
     if (card.description) {
       descEl.textContent = card.description;
     } else {
       descEl.remove();
     }
-    const dueWrap = el.querySelector('.kanban-card__due-wrapper');
+
+    const meta = el.querySelector('.kanban-card__meta');
+
     const due = parseDateOnly(card.due_date);
     if (due) {
       const dueEl = document.createElement('span');
@@ -197,10 +323,33 @@ export async function renderKanban(mount) {
       const extra = dueClass(due, today);
       if (extra) dueEl.classList.add(extra);
       dueEl.textContent = formatDueLabel(due);
-      dueWrap.appendChild(dueEl);
-    } else {
-      dueWrap.remove();
+      meta.appendChild(dueEl);
     }
+
+    const subtasks = card.subtasks || [];
+    if (subtasks.length > 0) {
+      const done = subtasks.filter((s) => s.done).length;
+      const total = subtasks.length;
+      const allDone = done === total;
+
+      const badge = document.createElement('span');
+      badge.className = 'kanban-card__subtasks' + (allDone ? ' kanban-card__subtasks--done' : '');
+      badge.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>${done}/${total}</span>
+      `;
+      meta.appendChild(badge);
+
+      const progress = el.querySelector('.kanban-card__progress');
+      const fill = progress.querySelector('.kanban-card__progress-fill');
+      progress.hidden = false;
+      fill.style.width = `${Math.round((done / total) * 100)}%`;
+    }
+
+    if (!meta.children.length) meta.remove();
+
     el.addEventListener('click', () => openEditModal(card));
     return el;
   }
@@ -211,7 +360,6 @@ export async function renderKanban(mount) {
     const newColumn = newColumnEl.dataset.column;
     const cardId = Number(cardEl.dataset.id);
 
-    // Recompute positions for every card in the target column.
     const siblings = Array.from(newColumnEl.querySelectorAll('.kanban-card'));
     const updates = siblings.map((el, idx) => ({
       id: Number(el.dataset.id),
@@ -219,12 +367,10 @@ export async function renderKanban(mount) {
     }));
 
     try {
-      // First the moved card (so its column is updated too).
       await api.put(`/api/kanban/cards/${cardId}`, {
         column: newColumn,
         position: updates.find((u) => u.id === cardId)?.position ?? 1,
       });
-      // Then the rest of the column gets re-positioned.
       await Promise.all(
         updates
           .filter((u) => u.id !== cardId)
@@ -253,8 +399,17 @@ export async function renderKanban(mount) {
   }
 
   function openEditModal(card) {
+    // Subtasks live as their own little API surface — changes there persist
+    // immediately, so we just need to refresh the board after the modal closes.
+    let subtasksTouched = false;
+
+    const subtasksSection = buildSubtasksSection(card, {
+      onChange: () => { subtasksTouched = true; },
+    });
+
     const { form, cancelBtn } = cardForm({
       initial: card,
+      extraSection: subtasksSection,
       onSubmit: async (data) => {
         try {
           await api.put(`/api/kanban/cards/${card.id}`, data);
@@ -275,7 +430,11 @@ export async function renderKanban(mount) {
         }
       },
     });
-    cancelBtn.addEventListener('click', () => modalRef?.close());
+    cancelBtn.addEventListener('click', async () => {
+      modalRef?.close();
+      if (subtasksTouched) await load();
+    });
+
     const modalRef = openModal({ title: 'Edytuj kartę', content: form });
   }
 

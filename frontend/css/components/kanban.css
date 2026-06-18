@@ -106,3 +106,145 @@
   background-color: #fee2e2;
   color: var(--color-danger);
 }
+
+.kanban-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.kanban-card__subtasks {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  padding: 2px 8px;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-sm);
+}
+
+.kanban-card__subtasks--done {
+  color: var(--color-success);
+}
+
+.kanban-card__subtasks svg {
+  width: 12px;
+  height: 12px;
+}
+
+.kanban-card__progress {
+  height: 3px;
+  background-color: var(--color-border);
+  border-radius: 999px;
+  margin-top: var(--space-2);
+  overflow: hidden;
+}
+
+.kanban-card__progress-fill {
+  height: 100%;
+  background-color: var(--color-accent);
+  transition: width 200ms ease;
+}
+
+/* --- Subtasks in modal --- */
+.subtasks {
+  margin-bottom: var(--space-4);
+}
+
+.subtasks__list {
+  list-style: none;
+  margin: 0 0 var(--space-2) 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.subtask {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.subtask:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.subtask__check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.subtask__input {
+  border: none;
+  background: transparent;
+  padding: var(--space-1) 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.subtask__input:focus {
+  outline: none;
+}
+
+.subtask--done .subtask__input {
+  text-decoration: line-through;
+  color: var(--color-text-subtle);
+}
+
+.subtask__delete {
+  font-size: var(--font-size-base);
+  color: var(--color-text-subtle);
+  padding: 0 var(--space-1);
+  visibility: hidden;
+}
+
+.subtask:hover .subtask__delete,
+.subtask__delete:focus-visible {
+  visibility: visible;
+}
+
+.subtask__delete:hover {
+  color: var(--color-danger);
+}
+
+.subtasks__add {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.subtasks__add input {
+  flex: 1;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg);
+  font-size: var(--font-size-sm);
+}
+
+.subtasks__add input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-light);
+}
+
+.subtasks__add-btn {
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.subtasks__add-btn:hover {
+  background-color: var(--color-accent-light);
+  color: var(--color-accent);
+}

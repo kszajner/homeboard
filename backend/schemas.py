@@ -101,6 +101,27 @@ class KanbanCardUpdate(BaseModel):
     due_date: date | None = None
 
 
+class KanbanSubtaskCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=300)
+
+
+class KanbanSubtaskUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=1, max_length=300)
+    done: bool | None = None
+    position: int | None = None
+
+
+class KanbanSubtaskOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    card_id: int
+    title: str
+    done: bool
+    position: int
+    created_at: datetime
+
+
 class KanbanCardOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -112,6 +133,7 @@ class KanbanCardOut(BaseModel):
     due_date: date | None
     created_at: datetime
     updated_at: datetime
+    subtasks: list[KanbanSubtaskOut] = Field(default_factory=list)
 
 
 # --- Menu ---

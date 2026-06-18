@@ -60,6 +60,35 @@ class KanbanCard(Base):
         DateTime, server_default=func.now(), onupdate=func.now(), nullable=False
     )
 
+    subtasks: Mapped[list["KanbanSubtask"]] = relationship(
+        "KanbanSubtask",
+        back_populates="card",
+        cascade="all, delete-orphan",
+        order_by="KanbanSubtask.position",
+    )
+
+
+class KanbanSubtask(Base):
+    """A checklist item belonging to a Kanban card."""
+
+    __tablename__ = "kanban_subtasks"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    card_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("kanban_cards.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    title: Mapped[str] = mapped_column(String(300), nullable=False)
+    done: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    position: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), nullable=False
+    )
+
+    card: Mapped["KanbanCard"] = relationship("KanbanCard", back_populates="subtasks")
+
 
 class MenuWeek(Base):
     """Weekly lunch menu — one row per ISO week."""

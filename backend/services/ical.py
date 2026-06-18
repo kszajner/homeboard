@@ -104,6 +104,12 @@ def _parse_events(ics_text: str, fallback_name: str) -> tuple[str, list[dict[str
             end_dt, all_day_end = _to_utc_naive(raw_end)
             all_day = all_day_start or all_day_end
 
+            # iCal DTEND for all-day events is exclusive (DTEND=22 June means
+            # the event lasts through 21 June). Make it inclusive so the
+            # frontend's day-range loop doesn't paint an extra day.
+            if all_day and end_dt > start_dt:
+                end_dt = end_dt - timedelta(days=1)
+
             uid = str(component.get("UID") or f"no-uid-{start_dt.isoformat()}")
             title = str(component.get("SUMMARY") or "(bez tytułu)")
             description = component.get("DESCRIPTION")
